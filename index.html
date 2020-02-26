@@ -4,18 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="main.css" />
   </head>
   <body>
+    <div class="main">
+      <h1>Pick Your Move</h1>
+      <div class="btn-container">
+        <button class="btn" data-hand="Rock">Rock</button>
+        <button class="btn" data-hand="Paper">Paper</button>
+        <button class="btn" data-hand="Scissors">Scissors</button>
+      </div>
+      <div class="score-container">
+        <div>
+          <h2>Your Score</h2>
+          <h2 class="player-score">0</h2>
+        </div>
+        <div>
+          <h2>Computer's Score</h2>
+          <h2 class="computer-score">0</h2>
+        </div>
+      </div>
+      <div class="result-container">
+        <h1 class="result"></h1>
+      </div>
+    </div>
     <script>
+      const btns = document.querySelectorAll(".btn");
+      const resultText = document.querySelector(".result");
+
+      let game = true;
+
       function computerPlay() {
         const choices = ["Rock", "Paper", "Scissors"];
         return choices[Math.floor(Math.random() * choices.length)];
       }
 
-      function playRound(playerSelection, computerSelection) {
-        playerSelection =
-          playerSelection.slice(0, 1).toUpperCase() +
-          playerSelection.slice(1).toLowerCase();
+      function playRound() {
+        const playerSelection = event.target.dataset.hand;
+        const computerSelection = computerPlay();
+        const playerScore = document.querySelector(".player-score");
+        const computerScore = document.querySelector(".computer-score");
+
         if (
           (playerSelection === "Rock" && computerSelection === "Rock") ||
           (playerSelection === "Paper" && computerSelection === "Paper") ||
@@ -29,67 +58,64 @@
           (playerSelection === "Scissors" && computerSelection === "Paper")
         ) {
           showResult(playerSelection, computerSelection, "won");
-          return 1;
+          showTotalScore(playerScore);
         } else if (
           (playerSelection === "Rock" && computerSelection === "Paper") ||
           (playerSelection === "Paper" && computerSelection === "Scissors") ||
           (playerSelection === "Scissors" && computerSelection === "Rock")
         ) {
           showResult(computerSelection, playerSelection, "lost");
-          return -1;
+          showTotalScore(computerScore);
         } else {
+          console.log(playerSelection, computerSelection);
           alert(
             "please enter a valid selection.  Refresh the page to start over."
           );
           return;
         }
       }
+
       // show result of each round
       function showResult(winnerSelection, loserSelection, result) {
+        const resultText = document.querySelector(".result");
+        resultText.addEventListener("transitionend", () => {
+          resultText.classList.remove("tie");
+        });
         if (result === "tied") {
-          console.log(`You ${result}. Both picked ${winnerSelection}.`);
+          resultText.classList.add("tie");
+          resultText.textContent = `You ${result} this round. Both picked ${winnerSelection}.`;
         } else {
-          console.log(
-            `You ${result}. ${winnerSelection} beats ${loserSelection}.`
-          );
+          resultText.textContent = `You ${result} this round. ${winnerSelection} beats ${loserSelection}.`;
         }
       }
-      // 5-round game
-      function game() {
-        let winCount = 0;
-        let loseCount = 0;
-        for (let i = 0; i < 5; i++) {
-          const playerSelection = prompt("Rock, Paper, or Scissors?");
-          const computerSelection = computerPlay();
 
-          const resultCount = playRound(playerSelection, computerSelection);
-          if (resultCount === undefined) {
-            return;
-          } else if (resultCount === 1) {
-            winCount++;
-          } else if (resultCount === -1) {
-            loseCount++;
-          }
+      function showTotalScore(score) {
+        let scoreNum = parseInt(score.textContent);
+        score.addEventListener("transitionend", () => {
+          score.classList.remove("score-change");
+        });
+
+        score.classList.add("score-change");
+        scoreNum++;
+        score.textContent = scoreNum;
+
+        if (scoreNum === 5) {
+          btns.forEach(btn => btn.removeEventListener("click", playRound));
+          showGameResult();
         }
-        showGameResult(winCount, loseCount);
       }
 
-      // show result of game (total round results)
-      function showGameResult(winCount, loseCount) {
-        if (winCount > loseCount) {
-          console.log(
-            `You won the game! Your Score: ${winCount} Computer's Score:${loseCount}`
-          );
-        } else if (winCount < loseCount) {
-          console.log(
-            `You lost the game... Your Score: ${winCount} Computer's Score ${loseCount}`
-          );
+      // game end with final score
+      function showGameResult() {
+        resultText.setAttribute("style", "font-size:3.5rem; color: #233d4d");
+        if (document.querySelector(".player-score").textContent === "5") {
+          resultText.textContent = "You are the winner of this game!";
         } else {
-          console.log(`You Tied the game.`);
+          resultText.textContent = "You lost this game...";
         }
       }
 
-      game();
+      btns.forEach(btn => btn.addEventListener("click", playRound));
     </script>
   </body>
 </html>

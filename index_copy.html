@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock Paper Scissors</title>
+  </head>
+  <body>
+    <script>
+      function computerPlay() {
+        const choices = ["Rock", "Paper", "Scissors"];
+        return choices[Math.floor(Math.random() * choices.length)];
+      }
+
+      function playRound(playerSelection, computerSelection) {
+        playerSelection =
+          playerSelection.slice(0, 1).toUpperCase() +
+          playerSelection.slice(1).toLowerCase();
+        if (
+          (playerSelection === "Rock" && computerSelection === "Rock") ||
+          (playerSelection === "Paper" && computerSelection === "Paper") ||
+          (playerSelection === "Scissors" && computerSelection === "Scissors")
+        ) {
+          showResult(playerSelection, computerSelection, "tied");
+          return 0;
+        } else if (
+          (playerSelection === "Rock" && computerSelection === "Scissors") ||
+          (playerSelection === "Paper" && computerSelection === "Rock") ||
+          (playerSelection === "Scissors" && computerSelection === "Paper")
+        ) {
+          showResult(playerSelection, computerSelection, "won");
+          return 1;
+        } else if (
+          (playerSelection === "Rock" && computerSelection === "Paper") ||
+          (playerSelection === "Paper" && computerSelection === "Scissors") ||
+          (playerSelection === "Scissors" && computerSelection === "Rock")
+        ) {
+          showResult(computerSelection, playerSelection, "lost");
+          return -1;
+        } else {
+          alert(
+            "please enter a valid selection.  Refresh the page to start over."
+          );
+          return;
+        }
+      }
+      // show result of each round
+      function showResult(winnerSelection, loserSelection, result) {
+        if (result === "tied") {
+          console.log(`You ${result}. Both picked ${winnerSelection}.`);
+        } else {
+          console.log(
+            `You ${result}. ${winnerSelection} beats ${loserSelection}.`
+          );
+        }
+      }
+      // 5-round game
+      function game() {
+        let winCount = 0;
+        let loseCount = 0;
+        for (let i = 0; i < 5; i++) {
+          const playerSelection = prompt("Rock, Paper, or Scissors?");
+          const computerSelection = computerPlay();
+
+          const resultCount = playRound(playerSelection, computerSelection);
+          if (resultCount === undefined) {
+            return;
+          } else if (resultCount === 1) {
+            winCount++;
+          } else if (resultCount === -1) {
+            loseCount++;
+          }
+        }
+        showGameResult(winCount, loseCount);
+      }
+
+      // show result of game (total round results)
+      function showGameResult(winCount, loseCount) {
+        if (winCount > loseCount) {
+          console.log(
+            `You won the game! Your Score: ${winCount} Computer's Score:${loseCount}`
+          );
+        } else if (winCount < loseCount) {
+          console.log(
+            `You lost the game... Your Score: ${winCount} Computer's Score ${loseCount}`
+          );
+        } else {
+          console.log(`You Tied the game.`);
+        }
+      }
+
+      game();
+    </script>
+  </body>
+</html>
